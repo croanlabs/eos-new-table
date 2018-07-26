@@ -1,6 +1,6 @@
 {
   "name": "eos-new-table",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generate EOS C++ smart contract to create a table.",
   "main": "index.js",
   "bin": {

@@ -22,28 +22,40 @@ const tableName = args['table-name'];
 const attrs = args['attributes'];
 
 // Generate list: [[type1, prop1], ... , [typen, propn]]
-const attrsList = attrs.split(';').map(a => {
-  a = a.trim();
-  let i = a.length;
-  let found = false;
-  while (!found && i >= 0) {
-    if (a[i] == ' ') {
-      found = true;
-    } else {
-      i--;
+const attrsList = attrs
+  .split(';')
+  .filter(a => (a != ''))
+  .map(a => {
+    a = a.trim();
+    let i = a.length;
+    let found = false;
+    while (!found && i >= 0) {
+      if (a[i] == ' ') {
+        found = true;
+      } else {
+        i--;
+      }
     }
-  }
-  if (!found) {
-    console.log(`Parameter does not have expected format: ${a}`);
-    process.exit();
-  }
-  return [a.substr(0,i), a.substr(i+1, a.length - i - 1)];
-});
+    if (!found) {
+      console.log(`Parameter does not have expected format: ${a}`);
+      process.exit();
+    }
+    return [a.substr(0,i), a.substr(i+1, a.length - i - 1)];
+  });
 
+// Generate attribute assigns for insert function of the contract
 let insertAssigns = '';
 attrsList.forEach(attr => {
   insertAssigns += `\n        new_${name}.${attr[1]} = ${attr[1]};`;
 });
+
+// Generate param list with the attributes as they would be passed to
+// a function.
+let attrsParamList = attrs
+  .split(';')
+  .filter(a => (a != ''))
+  .map(a => a.trim())
+  .join(', ');
 
 // Generate underscore template and replace values generating cpp's file content
 let templateStr = fs.readFileSync(`${__dirname}/templates/template.cpp`).toString();
@@ -54,7 +66,7 @@ const cppContent =
     className,
     tableName: tableName || name,
     attrs: attrsList,
-    attrsParamList: attrs.split(';').map(a => a.trim()).join(', '),
+    attrsParamList,
     insertAssigns
   });
 

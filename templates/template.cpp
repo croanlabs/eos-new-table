@@ -24,7 +24,7 @@ class <%= className %> : public eosio::contract {
       <% attrs.forEach((attr) => { %><%= attr[0] %> <%= attr[1] %>;
       <%})%>
       uint64_t primary_key() const { return id; };
-      EOSLIB_SERIALIZE(<%= name %>, <% attrs.forEach((attr) => { %>(<%= attr[1] %>)<%})%>)
+      EOSLIB_SERIALIZE(<%= name %>, (id)<% attrs.forEach((attr) => { %>(<%= attr[1] %>)<%})%>)
     };
 
     eosio::multi_index<N(<%=name%>), <%=name%>> <%=tableName%>;

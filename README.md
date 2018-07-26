@@ -12,24 +12,25 @@ npm i -g eos-new-table
 ### Options
 ```bash
 $ eos-new-table
+
 Generate EOS C++ smart contract to create a table on the blockchain.
   Options:
   --name          Name of the element to be represented. e.g. user
-  --attributes    Comma separated list of attributes of the element with their types.
-                  e.g. 'std::string name, uint64_t token_amount'
+  --attributes    Semicolon separated list of attributes of the element with their types.
+                  e.g. 'std::string name; uint64_t token_amount'
   --table-name    Name of the table to be created. If not defined the name parameter will be used.
-  --help          Show this help message.`
+  --help          Show this help message.
   
  ```
  ### Example
  ```bash
  $ eos-new-table --name user --table-name users \
-  --attributes 'std::string name, std::string avatar_url, uint64_t token_amount'
+   --attributes 'std::string name; uint64_t tokens_amount; std::map<uint64_t, uint64_t> token_transfs'
  ```
  
  #### user.cpp
  ```c++
- #include <eosiolib/eosio.hpp>
+#include <eosiolib/eosio.hpp>
 
 using namespace eosio;
 
@@ -42,12 +43,12 @@ class user_management : public eosio::contract {
       users(_self, _self) {}
 
     /// @abi action
-    void insert_user(std::string name, std::string avatar_url, uint64_t token_amount) {
+    void insert_user(std::string name, uint64_t tokens_amount, std::map<uint64_t, uint64_t> token_transfs) {
       users.emplace(_self, [&](auto& new_user) {
         new_user.id = users.available_primary_key();
         new_user.name = name;
-        new_user.avatar_url = avatar_url;
-        new_user.token_amount = token_amount;
+        new_user.tokens_amount = tokens_amount;
+        new_user.token_transfs = token_transfs;
       });
     }
 
@@ -56,11 +57,11 @@ class user_management : public eosio::contract {
     struct user {
       uint64_t id;
       std::string name;
-      std::string avatar_url;
-      uint64_t token_amount;
+      uint64_t tokens_amount;
+      std::map<uint64_t, uint64_t> token_transfs;
 
       uint64_t primary_key() const { return id; };
-      EOSLIB_SERIALIZE(user, (name)(avatar_url)(token_amount))
+      EOSLIB_SERIALIZE(user, (id)(name)(tokens_amount)(token_transfs))
     };
 
     eosio::multi_index<N(user), user> users;

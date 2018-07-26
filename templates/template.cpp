@@ -12,7 +12,7 @@ class <%= className %> : public eosio::contract {
 
     /// @abi action
     void insert_<%= name %>(<%= attrsParamList %>) {
-      <%= name %>s.emplace(_self, [&](auto& new_<%= name %>) {
+      <%= tableName %>.emplace(_self, [&](auto& new_<%= name %>) {
         new_<%= name %>.id = <%=tableName%>.available_primary_key();<%= insertAssigns %>
       });
     }

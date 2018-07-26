@@ -1,20 +1,22 @@
+#!/usr/bin/env node
 const fs = require('fs');
 const _ = require('underscore');
 const min = require('minimist')
-const c = require('chalk');
 
 const args = min(process.argv.slice(2));
-if (args['name'] == null) {
-  console.log(c.red('Error: \'name\' parameter required: --name className'));
-  return;
+if (args['name'] == null || args['attributes'] == null || args['help']) {
+  console.log( `\nGenerate EOS C++ smart contract to create a table on the blockchain.
+  Options:
+  --name          Name of the element to be represented. e.g. user
+  --attributes    Comma separated list of attributes of the element with their types.
+                  e.g. 'std::string name, uint64_t token_amount'
+  --table-name    Name of the table to be created. If not defined the name parameter will be used.
+  --help          Show this help message.
+  `);
+  process.exit();
 }
 
-if (args['attributes'] == null) {
-  console.log(c.red('Error: \'attributes\' parameter required: --attributes \'type1 attr1,type2 attr2\''));
-  return;
-}
-
-let templateStr = fs.readFileSync('./templates/template.cpp').toString();
+let templateStr = fs.readFileSync(`${__dirname}/templates/template.cpp`).toString();
 let template = _.template(templateStr);
 
 const name = args['name'];
@@ -48,4 +50,4 @@ fs.writeFile(`./${name}/${name}.cpp`, cppContent, (err) => {
   if (err) throw err;
 });
 
-fs.createReadStream('./templates/template.hpp').pipe(fs.createWriteStream(`./${name}/${name}.hpp`));
+fs.createReadStream(`${__dirname}/templates/template.hpp`).pipe(fs.createWriteStream(`./${name}/${name}.hpp`));

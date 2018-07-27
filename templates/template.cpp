@@ -27,7 +27,7 @@ class <%= className %> : public eosio::contract {
       EOSLIB_SERIALIZE(<%= name %>, (id)<% attrs.forEach((attr) => { %>(<%= attr[1] %>)<%})%>)
     };
 
-    eosio::multi_index<N(<%=name%>), <%=name%>> <%=tableName%>;
+    eosio::multi_index<N(<%=tableName%>), <%=name%>> <%=tableName%>;
 };
 
 EOSIO_ABI(<%= className %>, (insert))

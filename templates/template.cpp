@@ -11,7 +11,7 @@ class <%= className %> : public eosio::contract {
       <%=tableName%>(_self, _self) {}
 
     /// @abi action
-    void insert_<%= name %>(<%= attrsParamList %>) {
+    void insert(<%= attrsParamList %>) {
       <%= tableName %>.emplace(_self, [&](auto& new_<%= name %>) {
         new_<%= name %>.id = <%=tableName%>.available_primary_key();<%= insertAssigns %>
       });
@@ -30,4 +30,4 @@ class <%= className %> : public eosio::contract {
     eosio::multi_index<N(<%=name%>), <%=name%>> <%=tableName%>;
 };
 
-EOSIO_ABI(<%= className %>, (insert_<%= name %>))
+EOSIO_ABI(<%= className %>, (insert))

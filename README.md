@@ -24,8 +24,7 @@ Generate EOS C++ smart contract to create a table on the blockchain.
  ```
  ### Example
  ```bash
- $ eos-new-table --name user --table-name users \
-   --attributes 'std::string name; uint64_t tokens_amount; std::map<uint64_t, uint64_t> token_transfs'
+ $ eos-new-table --name user --table-name users --attributes 'std::string name; uint64_t tokens_amount'
  ```
  
  #### user.cpp
@@ -43,12 +42,11 @@ class user_management : public eosio::contract {
       users(_self, _self) {}
 
     /// @abi action
-    void insert_user(std::string name, uint64_t tokens_amount, std::map<uint64_t, uint64_t> token_transfs) {
+    void insert(std::string name, uint64_t tokens_amount) {
       users.emplace(_self, [&](auto& new_user) {
         new_user.id = users.available_primary_key();
         new_user.name = name;
         new_user.tokens_amount = tokens_amount;
-        new_user.token_transfs = token_transfs;
       });
     }
 
@@ -58,14 +56,13 @@ class user_management : public eosio::contract {
       uint64_t id;
       std::string name;
       uint64_t tokens_amount;
-      std::map<uint64_t, uint64_t> token_transfs;
 
       uint64_t primary_key() const { return id; };
-      EOSLIB_SERIALIZE(user, (id)(name)(tokens_amount)(token_transfs))
+      EOSLIB_SERIALIZE(user, (id)(name)(tokens_amount))
     };
 
     eosio::multi_index<N(user), user> users;
 };
 
-EOSIO_ABI(user_management, (insert_user))
+EOSIO_ABI(user_management, (insert))
  ```

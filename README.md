@@ -61,7 +61,7 @@ class user_management : public eosio::contract {
       EOSLIB_SERIALIZE(user, (id)(name)(tokens_amount))
     };
 
-    eosio::multi_index<N(user), user> users;
+    eosio::multi_index<N(users), user> users;
 };
 
 EOSIO_ABI(user_management, (insert))
